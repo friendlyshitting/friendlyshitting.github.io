@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name = "viewport" content="width=device-width, initial-scale=1">
+<title>FriendlyDump</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.7/dist/geosearch.css" />
+<link rel="stylesheet" href="styles.css" />
+<script src="https://kit.fontawesome.com/61307b5b13.js" crossorigin="anonymous"></script>
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+</head>
+<body>
+
+    <button type="button" class="btn btn-primary visible-xs-block visible-sm-block" id="addLocationBtn" style="position: fixed; bottom: 10px; left: 10px; z-index: 1000;">
+        Añadir lugar
+      </button>
+
+      <button type="button" class="btn btn-primary visible-xs-block visible-sm-block" id="locateUserBtn" style="position: fixed; bottom: 10px; right: 10px; z-index: 1000;">
+        <i class="fa-solid fa-location-crosshairs"></i>
+
+      </button>
+      
+      <div id="myModal" class="modal1">
+        <!-- Contenido del modal -->
+        <div class="modal1-content">
+          <span id="closeModal" class="close1">&times;</span>
+          <h3>Añade un cagadero</h3>
+          <p>Pulsa sobre cualquier lugar en el mapa, rellena el menú de la derecha y pulsa sobre guardar.</p>
+          <img src = "modal.png" style = "height: 50%; width: 100%;">
+        </div>
+      </div>
+      
+      <img src="fslogo.png" alt="Logo" id="fslogo" />
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Buscar lugares">
+        <button type="button" class="btn btn-primary" id="searchBtn">
+          Buscar
+        </button>
+      </div>      
+    
+      <!-- Agregar div para el menú -->
+      <div id="markerMenu" style="display: none; position: fixed; top: 10px; right: 10px; z-index: 1000; background-color: white; padding: 10px; border: 1px solid #ccc;">
+        <h5>Información del lugar</h5>
+        <form id="markerForm">
+            <div class="mb-3">
+              <label for="markerName" class="form-label">Nombre del lugar</label>
+              <input type="text" class="form-control" id="markerName" required>
+            </div>
+            <div class="mb-3">
+              <label for="markerRating" class="form-label">Limpieza</label>
+              <div class="rating" id="markerRating"></div>
+            </div>
+            <div class="mb-3">
+              <label for="markerAccessType" class="form-label">Tipo de acceso</label>
+              <select class="form-select" id="markerAccessType" required>
+                <option value="Libre">Libre</option>
+                <option value="Sólo clientes">Sólo clientes</option>
+                <option value="De pago">De pago</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-secondary" id="cancelMarkerBtn">Cancelar</button>
+            <button type="button" class="btn btn-danger" id="deleteMarkerBtn" style="display:none">Borrar marcador</button>
+          </form>          
+      </div>
+    
+      <div id="map"></div>
+
+</body>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="script.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/leaflet-geosearch@3.0.7/dist/geosearch.umd.js"></script>
+
+
+</html>
