@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name = "viewport" content="width=device-width, initial-scale=1">
-<title>FriendlyDump</title>
+<title>FriendlyShitting</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.7/dist/geosearch.css" />
@@ -22,7 +22,7 @@
 
       </button>
       
-      <div id="myModal" class="modal1">
+      <div id="myModal" class="modal1" style = "z-index: 9999;">
         <!-- Contenido del modal -->
         <div class="modal1-content">
           <span id="closeModal" class="close1">&times;</span>
@@ -42,15 +42,42 @@
     
       <!-- Agregar div para el menú -->
       <div id="markerMenu" style="display: none; position: fixed; top: 10px; right: 10px; z-index: 1000; background-color: white; padding: 10px; border: 1px solid #ccc;">
-        <h5>Información del lugar</h5>
         <form id="markerForm">
-            <div class="mb-3">
+            <div class="mb-1">
               <label for="markerName" class="form-label">Nombre del lugar</label>
               <input type="text" class="form-control" id="markerName" required>
             </div>
             <div class="mb-3">
-              <label for="markerRating" class="form-label">Limpieza</label>
+              <label for="markerName" class="form-label">Localización del baño</label>
+              <input type="text" class="form-control" id="markerLoc" required>
+            </div>
+            <div class="mb-3">
+              <label for="markerRating" class="form-label rating-label">Privacidad</label>
               <div class="rating" id="markerRating"></div>
+            </div>
+            <div class="mb-3">
+              <label for="markerRating" class="form-label">Papel</label>
+              <label class="toggle">
+                <input class="toggle-checkbox" type="checkbox" id = "inputpapel">
+                <div class="toggle-switch"></div>
+                <span class="toggle-label"></span>
+              </label>
+            </div>
+            <div class="mb-3">
+              <label for="markerRating" class="form-label">Agua y jabón</label>
+              <label class="toggle">
+                <input class="toggle-checkbox" type="checkbox" id = "inputjabon">
+                <div class="toggle-switch"></div>
+                <span class="toggle-label"></span>
+              </label>
+            </div>
+            <div class="mb-3">
+              <label for="markerRating" class="form-label">Olor</label>
+              <div class="rating" id="odorRating"></div>
+            </div>
+            <div class="mb-3">
+              <label for="markerRating" class="form-label">Limpieza</label>
+              <div class="rating" id="cleanRating"></div>
             </div>
             <div class="mb-3">
               <label for="markerAccessType" class="form-label">Tipo de acceso</label>
@@ -59,6 +86,10 @@
                 <option value="Sólo clientes">Sólo clientes</option>
                 <option value="De pago">De pago</option>
               </select>
+              <div class="mb-3">
+                <label for="totalRating" class="form-label">Valoración global</label>
+                <div class="rating" id="totalRating"></div>
+              </div>
             </div>
             <button type="submit" class="btn btn-primary">Guardar</button>
             <button type="button" class="btn btn-secondary" id="cancelMarkerBtn">Cancelar</button>

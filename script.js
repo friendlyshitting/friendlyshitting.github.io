@@ -59,8 +59,14 @@ document.getElementById("searchBtn").addEventListener("click", function () {
 function bindMarkerEvents(marker) {
 // Agrega el nombre del lugar y un botón "Borrar" al mensaje emergente del marcador
 marker.bindPopup(function () {
-    var popupContent = "<strong>Nombre del lugar:</strong> " + marker.options.name + "<br>";
-    popupContent += "<strong>Limpieza:</strong> " + "★".repeat(marker.options.rating) + "☆".repeat(5 - marker.options.rating) + "<br>";
+    var popupContent = "<span style='display: block; font-size: 2em; color: #ffcc0d; text-align: center;'>" + "★".repeat(marker.options.totalrating) + "☆".repeat(5 - marker.options.totalrating) + "</span><br>";
+    popupContent += "<span style='display: block; font-size: 2em; color: black; text-align: center;'> " + marker.options.name + "</span><br>";
+    popupContent += "<strong>Localización del baño:</strong> " + marker.options.loc + "<br>";    
+    popupContent += "<strong>Privacidad:</strong> " + "★".repeat(marker.options.rating) + "☆".repeat(5 - marker.options.rating) + "<br>";
+    popupContent += "<strong>Papel:</strong> " + marker.options.papel + "<br>";    
+    popupContent += "<strong>Agua y jabón:</strong> " + marker.options.jabon + "<br>"; 
+    popupContent += "<strong>Limpieza:</strong> " + "★".repeat(marker.options.cleanrating) + "☆".repeat(5 - marker.options.cleanrating) + "<br>";
+    popupContent += "<strong>Olor:</strong> " + "★".repeat(marker.options.odorrating) + "☆".repeat(5 - marker.options.odorrating) + "<br>";
     popupContent += "<strong>Tipo de acceso:</strong> " + marker.options.accessType;
     popupContent += "<br><button class='btn btn-danger btn-sm mt-2 delete-marker' data-marker-id='" + marker.id + "'>Borrar</button>";
     return popupContent;
@@ -131,33 +137,57 @@ function addMarker() {
     if (!markerCoords) return;
 
     var markerName = document.getElementById("markerName").value;
+    var markerLoc = document.getElementById("markerLoc").value;
 
     if (markerName) {
     // Agrega un marcador al mapa con la información completa y el icono personalizado
     var marker = L.marker(markerCoords, {
-        icon: pooicon, // Añade el icono personalizado aquí
+        icon: pooicon, // Añade el icono personalizado aquís
         name: markerName,
-        rating: 6 - parseInt(document.querySelector("input[name='rating']:checked").value),
+        loc: markerLoc,
+        rating: parseInt(document.querySelector("input[name='rating']:checked").value),
+        papel: inputpapel,
+        jabon: inputjabon,
+        cleanrating: parseInt(document.querySelector("input[name='cleanrating']:checked").value),
+        odorrating: parseInt(document.querySelector("input[name='odorrating']:checked").value),
+        totalrating: parseInt(document.querySelector("input[name='totalrating']:checked").value),
         accessType: document.getElementById("markerAccessType").value
     }).addTo(map);
 
     if (selectedMarker) {
         // Actualiza la información del marcador seleccionado
         selectedMarker.options.name = markerName;
+        selectedMarker.options.loc = markerLoc;
+        selectedMarker.options.papel = inputpapel;
+        selectedMarker.options.jabon = inputjabon;
         selectedMarker.options.rating = parseInt(document.querySelector("input[name='rating']:checked").value);
+        selectedMarker.options.cleanrating = parseInt(document.querySelector("input[name='cleanrating']:checked").value);        
+        selectedMarker.options.odorrating = parseInt(document.querySelector("input[name='odorrating']:checked").value);
+        selectedMarker.options.totalrating = parseInt(document.querySelector("input[name='totalrating']:checked").value);
         selectedMarker.options.accessType = document.getElementById("markerAccessType").value;
 
         // Actualiza la información en Firebase
         var markersCollection = firebase.firestore().collection("markers");
         markersCollection.doc(selectedMarker.id).update({
         name: markerName,
+        loc: markerLoc,
+        papel: inputpapel,
+        jabon: inputjabon,
+        cleanrating: selectedMarker.options.cleanrating,
+        odorrating: selectedMarker.options.odorrating,
         rating: selectedMarker.options.rating,
+        totalrating: selectedMarker.options.totalrating,
         accessType: selectedMarker.options.accessType
         });
 
         // Actualiza el mensaje emergente del marcador
         var popupContent = "<strong>Nombre del lugar:</strong> " + selectedMarker.options.name + "<br>";
-        popupContent += "<strong>Limpieza:</strong> " + "★".repeat(selectedMarker.options.rating) + "☆".repeat(5 - selectedMarker.options.rating) + "<br>";
+        popupContent = "<strong>Localización del baño:</strong> " + selectedMarker.options.loc + "<br>";
+        popupContent += "<strong>Limpieza:</strong> " + "★".repeat(selectedMarker.options.cleanrating) + "☆".repeat(5 - selectedMarker.options.cleanrating) + "<br>";
+        popupContent = "<strong>Papel:</strong> " + selectedMarker.options.papel + "<br>";
+        popupContent = "<strong>Jabón:</strong> " + selectedMarker.options.jabon + "<br>";
+        popupContent += "<strong>Olor:</strong> " + "★".repeat(selectedMarker.options.odorrating) + "☆".repeat(5 - selectedMarker.options.odorrating) + "<br>";
+        popupContent += "<strong>Valoración:</strong> " + "★".repeat(selectedMarker.options.totalrating) + "☆".repeat(5 - selectedMarker.options.totalrating) + "<br>";
         popupContent += "<strong>Tipo de acceso:</strong> " + selectedMarker.options.accessType;
         selectedMarker.bindPopup(popupContent);
 
@@ -171,7 +201,13 @@ function addMarker() {
     lat: markerCoords.lat,
     lng: markerCoords.lng,
     name: markerName,
+    loc: markerLoc,
+    papel: inputpapel,
+    jabon: inputjabon,
     rating: parseInt(document.querySelector("input[name='rating']:checked").value),
+    cleanrating: parseInt(document.querySelector("input[name='cleanrating']:checked").value),
+    odorrating: parseInt(document.querySelector("input[name='odorrating']:checked").value),
+    totalrating: parseInt(document.querySelector("input[name='totalrating']:checked").value),
     accessType: document.getElementById("markerAccessType").value
     }).then(function (docRef) {
     marker.id = docRef.id; // Asigna el ID del documento en Firestore al marcador
@@ -181,6 +217,13 @@ function addMarker() {
 
     // Limpia y oculta el formulario
     document.getElementById("markerName").value = "";
+
+    // Restablece el marcador seleccionado
+    selectedMarker = null;
+
+    // Desactiva el modo de adición de marcadores
+    disableAddMarkerMode();
+
 } else {
     alert("Por favor, ingresa un nombre para el lugar.");
 }
@@ -219,14 +262,25 @@ function addMarker() {
             var marker = L.marker([data.lat, data.lng], {
             icon: pooicon, // Añade el icono personalizado aquí
             name: data.name,
+            loc: data.loc,
+            papel: data.papel,
+            jabon: data.jabon,
+            cleanrating: data.cleanrating,
+            odorrating: data.odorrating,
             rating: data.rating, // Añade la propiedad rating
+            totalrating: data.totalrating, 
             accessType: data.accessType // Añade la propiedad accessType
             }).addTo(map);          
             marker.id = doc.id; // Asigna el ID del documento en Firestore al marcador
 
         // Agrega la información adicional al mensaje emergente del marcador
         var popupContent = "<strong>Nombre del lugar:</strong> " + data.name + "<br>";
-        popupContent += "<strong>Limpieza:</strong> " + "★".repeat(data.rating) + "☆".repeat(5 - data.rating) + "<br>";
+        popupContent = "<strong>Localización del lugar:</strong> " + data.loc + "<br>";
+        popupContent += "<strong>Limpieza:</strong> " + "★".repeat(data.cleanrating) + "☆".repeat(5 - data.cleanrating) + "<br>";
+        popupContent = "<strong>Papel:</strong> " + data.papel + "<br>";
+        popupContent = "<strong>Jabón:</strong> " + data.jabon + "<br>";
+        popupContent += "<strong>Olor:</strong> " + "★".repeat(data.odorrating) + "☆".repeat(5 - data.odorrating) + "<br>";
+        popupContent += "<strong>Valoración:</strong> " + "★".repeat(data.totalrating) + "☆".repeat(5 - data.totalrating) + "<br>";
         popupContent += "<strong>Tipo de acceso:</strong> " + data.accessType;
         marker.bindPopup(popupContent);
         bindMarkerEvents(marker); // Vincula los eventos al marcador
@@ -261,7 +315,13 @@ if (selectedMarker) {
     function populateForm(marker) {
     selectedMarker = marker;
     document.getElementById("markerName").value = marker.options.name;
+    document.getElementById("markerLoc").value = marker.options.loc;
+    document.getElementById("inputpapel").value = marker.options.papel;
+    document.getElementById("inputjabon").value = marker.options.jabon;
     document.getElementById("rating-" + marker.options.rating).checked = true;
+    document.getElementById("cleanrating-" + marker.options.cleanrating).checked = true;
+    document.getElementById("odorrating-" + marker.options.odorrating).checked = true;
+    document.getElementById("totalrating-" + marker.options.totalrating).checked = true;
     document.getElementById("markerAccessType").value = marker.options.accessType;
     // Muestra el menú
     document.getElementById("markerMenu").style.display = "block";
@@ -302,7 +362,7 @@ if (selectedMarker) {
         map.getContainer().style.cursor = "crosshair";
         map.once("click", function (e) {
             markerCoords = e.latlng;
-            document.getElementById("markerMenu").style.display = "block";
+            document.getElementById("markerMenu").style.display = "flex";
             // Restaura el cursor predeterminado después de agregar el marcador
             map.getContainer().style.cursor = "";
         });
@@ -334,26 +394,126 @@ if (selectedMarker) {
     
     });
 
-    function createStarRating() {
-    var ratingContainer = document.getElementById("markerRating");
+function createStarRating() {
+var ratingContainer = document.getElementById("markerRating");
+
+for (var i = 5; i >= 1; i--) {
+    var radioInput = document.createElement("input");
+    radioInput.type = "radio";
+    radioInput.name = "rating";
+    radioInput.id = "rating-" + i;
+    radioInput.value = i;
+    radioInput.classList.add("rating");
+
+    var label = document.createElement("label");
+    label.htmlFor = "rating-" + i;
+    label.classList.add("rating");
+
+    ratingContainer.appendChild(radioInput);
+    ratingContainer.appendChild(label);
+}
+}
+
+
+createStarRating();
+
+    
+function createTotalRating() {
+    var totalratingContainer = document.getElementById("totalRating");
 
     for (var i = 5; i >= 1; i--) {
         var radioInput = document.createElement("input");
         radioInput.type = "radio";
-        radioInput.name = "rating";
-        radioInput.id = "rating-" + i;
+        radioInput.name = "totalrating";
+        radioInput.id = "totalrating-" + i;
         radioInput.value = i;
-        radioInput.classList.add("rating");
+        radioInput.classList.add("totalrating");
 
         var label = document.createElement("label");
-        label.htmlFor = "rating-" + i;
-        label.classList.add("rating");
+        label.htmlFor = "totalrating-" + i;
+        label.classList.add("totalrating");
 
-        ratingContainer.appendChild(radioInput);
-        ratingContainer.appendChild(label);
+        totalratingContainer.appendChild(radioInput);
+        totalratingContainer.appendChild(label);
     }
     }
 
 
-    createStarRating();
+createTotalRating();
 
+
+function createOdorRating() {
+    var totalOdorContainer = document.getElementById("odorRating");
+
+    for (var i = 5; i >= 1; i--) {
+        var radioInput = document.createElement("input");
+        radioInput.type = "radio";
+        radioInput.name = "odorrating";
+        radioInput.id = "odorrating-" + i;
+        radioInput.value = i;
+        radioInput.classList.add("odorrating");
+
+        var label = document.createElement("label");
+        label.htmlFor = "odorrating-" + i;
+        label.classList.add("odorrating");
+
+        totalOdorContainer.appendChild(radioInput);
+        totalOdorContainer.appendChild(label);
+    }
+    }
+
+
+createOdorRating();
+
+
+function createCleanRating() {
+    var totalCleanContainer = document.getElementById("cleanRating");
+
+    for (var i = 5; i >= 1; i--) {
+        var radioInput = document.createElement("input");
+        radioInput.type = "radio";
+        radioInput.name = "cleanrating";
+        radioInput.id = "cleanrating-" + i;
+        radioInput.value = i;
+        radioInput.classList.add("cleanrating");
+
+        var label = document.createElement("label");
+        label.htmlFor = "cleanrating-" + i;
+        label.classList.add("cleanrating");
+
+        totalCleanContainer.appendChild(radioInput);
+        totalCleanContainer.appendChild(label);
+    }
+    }
+
+
+createCleanRating();
+
+
+var inputpapel = 'No';
+
+document.getElementById('inputpapel').addEventListener('change', function() {
+  if (this.checked) {
+    inputpapel = 'Sí';
+  } else {
+    inputpapel = 'No';
+  }
+  console.log('Valor del toggle:', inputpapel);
+});
+
+var inputjabon = 'No';
+
+document.getElementById('inputjabon').addEventListener('change', function() {
+  if (this.checked) {
+    inputjabon = 'Sí';
+  } else {
+    inputjabon = 'No';
+  }
+  console.log('Valor del toggle:', inputjabon);
+});
+
+
+function disableAddMarkerMode() {
+    map.off("click");
+    map.getContainer().style.cursor = "";
+}
